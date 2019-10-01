@@ -564,7 +564,7 @@ function horizontalRecheck() {
         //console.log("-> horizontalIntervalCounter = " + horizontalIntervalCounter);
         console.warn("-> scrollWidth changed from " + window.scrollWidth + " to " +
             document.documentElement.scrollWidth);
-        postInitHorizontalDirection();
+        //postInitHorizontalDirection();
     }
 
     if (horizontalIntervalCounter >= horizontalIntervalLimit)
@@ -573,9 +573,9 @@ function horizontalRecheck() {
 
 function initHorizontalDirection() {
 
-    preInitHorizontalDirection();
-    postInitHorizontalDirection();
-
+    //preInitHorizontalDirection();
+    //postInitHorizontalDirection();
+    FolioPageFragment.setHorizontalPageCount(1);
     horizontalInterval = setInterval(horizontalRecheck, horizontalIntervalPeriod);
 }
 

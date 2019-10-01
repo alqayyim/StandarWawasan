@@ -31,12 +31,12 @@ import org.greenrobot.eventbus.EventBus
 /**
  * Created by mobisys2 on 11/16/2016.
  */
-class ConfigBottomSheetDialogFragment : BottomSheetDialogFragment() {
+class ConfigPageBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     companion object {
         const val FADE_DAY_NIGHT_MODE = 500
         @JvmField
-        val LOG_TAG: String = ConfigBottomSheetDialogFragment::class.java.simpleName
+        val LOG_TAG: String = ConfigPageBottomSheetDialogFragment::class.java.simpleName
     }
 
     private lateinit var config: Config
