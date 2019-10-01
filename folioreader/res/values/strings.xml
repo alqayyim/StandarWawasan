@@ -11,6 +11,7 @@
     <string name="lato_font">fonts/lato/Lato-Regular.ttf</string>
     <string name="lora_font">fonts/lora/Lora-Regular.ttf</string>
     <string name="raleway_font">fonts/raleway/Raleway-Regular.ttf</string>
+    <string name="raleway_bold_font">fonts/raleway/Raleway-Bold.ttf</string>
 
     <string name="minutes_left">%1$d minutes ·&#160;</string>
     <string name="minute_left">%1$d minute ·&#160;</string>
@@ -22,6 +23,7 @@
     <string name="copy">Copy</string>
     <string name="share">Share</string>
     <string name="define">Define</string>
+    <string name="note">Note</string>
     <string name="highlight">Highlight</string>
 
     <string name="pages_left">%1$d pages left</string>

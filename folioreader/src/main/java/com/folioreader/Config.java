@@ -31,7 +31,7 @@ public class Config implements Parcelable {
             ContextCompat.getColor(AppContext.get(), R.color.default_theme_accent_color);
 
     private int font = 3;
-    private int fontSize = 2;
+    private int fontSize = 0;
     private boolean nightMode;
     @ColorInt
     private int themeColor = DEFAULT_THEME_COLOR_INT;

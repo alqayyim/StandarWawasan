@@ -57,6 +57,16 @@ public class HomeActivity extends AppCompatActivity
 
         getHighlightsAndSave();
 
+        ReadLocator readLocator = getLastReadLocator();
+
+        Config config = AppUtil.getSavedConfig(getApplicationContext());
+        if (config == null)
+            config = new Config();
+        config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
+
+        folioReader.setReadLocator(readLocator);
+        folioReader.setConfig(config, true)
+                .openBook("file:///android_asset/standarwawasangood4.epub");
         findViewById(R.id.btn_raw).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -51,6 +51,7 @@ import com.folioreader.FolioReader
 import com.folioreader.R
 import com.folioreader.model.DisplayUnit
 import com.folioreader.model.HighlightImpl
+import com.folioreader.model.event.GotoPageEvent
 import com.folioreader.model.event.MediaOverlayPlayPauseEvent
 import com.folioreader.model.locators.ReadLocator
 import com.folioreader.model.locators.SearchLocator
@@ -58,14 +59,14 @@ import com.folioreader.ui.adapter.FolioPageFragmentAdapter
 import com.folioreader.ui.adapter.SearchAdapter
 import com.folioreader.ui.fragment.FolioPageFragment
 import com.folioreader.ui.fragment.MediaControllerFragment
-import com.folioreader.ui.view.ConfigBottomSheetDialogFragment
-import com.folioreader.ui.view.DirectionalViewpager
-import com.folioreader.ui.view.FolioAppBarLayout
-import com.folioreader.ui.view.MediaControllerCallback
+import com.folioreader.ui.view.*
 import com.folioreader.util.AppUtil
 import com.folioreader.util.FileUtil
 import com.folioreader.util.UiUtil
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.readium.r2.shared.Link
 import org.readium.r2.shared.Publication
 import org.readium.r2.streamer.parser.CbzParser
@@ -242,6 +243,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        EventBus.getDefault().register(this)
         // Need to add when vector drawables support library is used.
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
@@ -431,10 +433,16 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     }
 
     fun showConfigBottomSheetDialogFragment() {
-        ConfigBottomSheetDialogFragment().show(
+        val bottomSheet = ConfigPageBottomSheetDialogFragment()
+        bottomSheet.setProgressPage(mFolioPageViewPager!!.currentItem)
+        bottomSheet.show(
+            supportFragmentManager,
+            ConfigPageBottomSheetDialogFragment.LOG_TAG
+        )
+        /*ConfigBottomSheetDialogFragment().show(
             supportFragmentManager,
             ConfigBottomSheetDialogFragment.LOG_TAG
-        )
+        )*/
     }
 
     fun showMediaController() {
@@ -450,7 +458,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             Log.e(LOG_TAG, "-> Failed to initialize book", e)
             onBookInitFailure()
         }
-
     }
 
     @Throws(Exception::class)
@@ -830,6 +837,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun onDestroy() {
         super.onDestroy()
 
+        EventBus.getDefault().unregister(this)
         if (outState != null)
             outState!!.putSerializable(BUNDLE_READ_LOCATOR_CONFIG_CHANGE, lastReadLocator)
 
@@ -1025,6 +1033,12 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 spine!![currentChapterIndex].href, false, false
             )
         )
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun reload(page: GotoPageEvent) {
+        Log.d(LOG_TAG, "GOTOPAGE : "+page.page.toString())
+        mFolioPageViewPager!!.currentItem = page.page
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

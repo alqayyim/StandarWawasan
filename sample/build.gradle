@@ -51,7 +51,10 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.0.0-alpha1"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
+    implementation 'com.xw.repo:bubbleseekbar:3.20-lite'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation "androidx.test.ext:junit:1.0.0"
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'

@@ -28,16 +28,20 @@ import com.folioreader.R
 import com.folioreader.model.DisplayUnit
 import com.folioreader.model.HighLight
 import com.folioreader.model.HighlightImpl.HighlightStyle
+import com.folioreader.model.event.NoteDataEvent
+import com.folioreader.model.event.ReloadDataEvent
 import com.folioreader.model.sqlite.HighLightTable
 import com.folioreader.ui.activity.FolioActivity
 import com.folioreader.ui.activity.FolioActivityCallback
 import com.folioreader.ui.fragment.DictionaryFragment
 import com.folioreader.ui.fragment.FolioPageFragment
+import com.folioreader.ui.fragment.NoteDialogFragment
 import com.folioreader.util.AppUtil
 import com.folioreader.util.HighlightUtil
 import com.folioreader.util.UiUtil
 import dalvik.system.PathClassLoader
 import kotlinx.android.synthetic.main.text_selection.view.*
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import org.springframework.util.ReflectionUtils
 import java.lang.ref.WeakReference
@@ -307,6 +311,10 @@ class FolioWebView : WebView {
             dismissPopupWindow()
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
+        viewTextSelection.noteSelection.setOnClickListener {
+            dismissPopupWindow()
+            loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
+        }
     }
 
     @JavascriptInterface
@@ -328,12 +336,25 @@ class FolioWebView : WebView {
                 Log.v(LOG_TAG, "-> onTextSelectionItemClicked -> defineSelection -> $selectedText")
                 uiHandler.post { showDictDialog(selectedText) }
             }
+            R.id.noteSelection -> {
+                Log.v(LOG_TAG, "-> onTextSelectionItemClicked -> defineSelection -> $selectedText")
+
+                uiHandler.post { showNoteDialog(selectedText) }
+                /*val noteDataEvent = NoteDataEvent()
+                noteDataEvent.selectedText = selectedText
+                EventBus.getDefault().post(NoteDataEvent())*/
+            }
             else -> {
                 Log.w(LOG_TAG, "-> onTextSelectionItemClicked -> unknown id = $id")
             }
         }
     }
 
+
+    private fun showNoteDialog(selectedText: String?) {
+        val noteDialogFragment = NoteDialogFragment()
+        noteDialogFragment.show(parentFragment.fragmentManager, NoteDialogFragment::class.java.name)
+    }
     private fun showDictDialog(selectedText: String?) {
         val dictionaryFragment = DictionaryFragment()
         val bundle = Bundle()

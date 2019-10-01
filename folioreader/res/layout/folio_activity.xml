@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -7,6 +8,21 @@
     android:layout_height="match_parent"
     tools:context="com.folioreader.ui.activity.FolioActivity"
     tools:menu="@menu/menu_main">
+<!--<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#efefef">
+
+    <include layout="@layout/view_config_page" />-->
+
+    <!--<androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.folioreader.ui.activity.FolioActivity"
+        tools:menu="@menu/menu_main">-->
 
     <com.folioreader.ui.view.DirectionalViewpager
         android:id="@+id/folioPageViewPager"
@@ -37,3 +53,6 @@
     </com.folioreader.ui.view.FolioAppBarLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--
+</androidx.coordinatorlayout.widget.CoordinatorLayout>-->

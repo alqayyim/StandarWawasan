@@ -81,25 +81,8 @@ public final class HtmlUtil {
             classes += " nightMode";
         }
 
-        switch (config.getFontSize()) {
-            case 0:
-                classes += " textSizeOne";
-                break;
-            case 1:
-                classes += " textSizeTwo";
-                break;
-            case 2:
-                classes += " textSizeThree";
-                break;
-            case 3:
-                classes += " textSizeFour";
-                break;
-            case 4:
-                classes += " textSizeFive";
-                break;
-            default:
-                break;
-        }
+        classes += " textSizeOne";
+
 
         htmlContent = htmlContent.replace("<html", "<html class=\"" + classes + "\"" +
                 " onclick=\"onClickHtml()\"");
