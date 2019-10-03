@@ -241,7 +241,7 @@ class FolioPageFragment : Fragment(),
             getLastReadLocator()
 
         if (isAdded) {
-            mWebview!!.dismissPopupWindow()
+            mWebview!!.dismissPopupWindow(true)
             mWebview!!.initViewTextSelection()
             loadingView!!.updateTheme()
             loadingView!!.show()
@@ -786,6 +786,11 @@ class FolioPageFragment : Fragment(),
             )
         }
     }
+    private var noteContent : String? = ""
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun updateHighlightNote(event: NoteDataEvent) {
+        noteContent = event.textNotes
+    }
 
     override fun resetCurrentIndex() {
         if (isCurrentFragment) {
@@ -802,7 +807,7 @@ class FolioPageFragment : Fragment(),
                 mBookId,
                 pageName,
                 spineIndex,
-                rangy
+                rangy, noteContent
             )
         }
     }

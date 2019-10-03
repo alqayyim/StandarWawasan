@@ -58,7 +58,7 @@
             <ImageView
                 android:id="@+id/underlineHighlight"
                 style="@style/ImageViewTextSelectorMarker"
-                app:srcCompat="@drawable/ic_format_underlined" />
+                app:srcCompat="@drawable/ic_underline_unselected" />
 
         </LinearLayout>
         <Button
@@ -70,11 +70,11 @@
             android:background="@drawable/note_round_button"
             android:layout_margin="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btnDelete"
+            app:layout_constraintStart_toEndOf="@id/btnCancel"
             app:layout_constraintTop_toBottomOf="@id/layoutColor" />
 
         <Button
-            android:id="@+id/btnDelete"
+            android:id="@+id/btnCancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -83,7 +83,7 @@
             app:layout_constraintTop_toBottomOf="@id/layoutColor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnSave"
-            android:text="Delete"/>
+            android:text="Cancel"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </RelativeLayout>

@@ -12,7 +12,7 @@
             android:id="@+id/iv_edit_note"
             android:layout_width="80dp"
             android:layout_height="match_parent"
-            android:background="#8A2BE2"
+            android:background="@color/highlight_yellow"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:src="@drawable/edit_note" />

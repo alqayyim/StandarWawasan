@@ -29,7 +29,6 @@ import com.folioreader.model.DisplayUnit
 import com.folioreader.model.HighLight
 import com.folioreader.model.HighlightImpl.HighlightStyle
 import com.folioreader.model.event.NoteDataEvent
-import com.folioreader.model.event.ReloadDataEvent
 import com.folioreader.model.sqlite.HighLightTable
 import com.folioreader.ui.activity.FolioActivity
 import com.folioreader.ui.activity.FolioActivityCallback
@@ -42,6 +41,8 @@ import com.folioreader.util.UiUtil
 import dalvik.system.PathClassLoader
 import kotlinx.android.synthetic.main.text_selection.view.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
 import org.springframework.util.ReflectionUtils
 import java.lang.ref.WeakReference
@@ -196,7 +197,7 @@ class FolioWebView : WebView {
     }
 
     @JavascriptInterface
-    fun dismissPopupWindow(): Boolean {
+    fun dismissPopupWindow(isRemoveSelectedText : Boolean): Boolean {
         Log.d(LOG_TAG, "-> dismissPopupWindow -> " + parentFragment.spineItem?.href)
         val wasShowing = popupWindow.isShowing
         if (Looper.getMainLooper().thread == Thread.currentThread()) {
@@ -204,16 +205,19 @@ class FolioWebView : WebView {
         } else {
             uiHandler.post { popupWindow.dismiss() }
         }
-        selectionRect = Rect()
-        uiHandler.removeCallbacks(isScrollingRunnable)
-        isScrollingCheckDuration = 0
+
+        if (isRemoveSelectedText) {
+            selectionRect = Rect()
+            uiHandler.removeCallbacks(isScrollingRunnable)
+            isScrollingCheckDuration = 0
+        }
         return wasShowing
     }
 
     override fun destroy() {
         super.destroy()
         Log.d(LOG_TAG, "-> destroy")
-        dismissPopupWindow()
+        dismissPopupWindow(true)
         destroyed = true
     }
 
@@ -238,7 +242,6 @@ class FolioWebView : WebView {
 
     private fun init() {
         Log.v(LOG_TAG, "-> init")
-
         uiHandler = Handler()
         displayMetrics = resources.displayMetrics
         density = displayMetrics!!.density
@@ -250,6 +253,16 @@ class FolioWebView : WebView {
         }
 
         initViewTextSelection()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        EventBus.getDefault().unregister(this)
     }
 
     fun initViewTextSelection() {
@@ -294,67 +307,64 @@ class FolioWebView : WebView {
 
         viewTextSelection.deleteHighlight.setOnClickListener {
             Log.v(LOG_TAG, "-> onClick -> deleteHighlight")
-            dismissPopupWindow()
+            dismissPopupWindow(true)
             loadUrl("javascript:clearSelection()")
             loadUrl("javascript:deleteThisHighlight()")
         }
 
         viewTextSelection.copySelection.setOnClickListener {
-            dismissPopupWindow()
+            dismissPopupWindow(true)
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
         viewTextSelection.shareSelection.setOnClickListener {
-            dismissPopupWindow()
+            dismissPopupWindow(true)
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
         viewTextSelection.defineSelection.setOnClickListener {
-            dismissPopupWindow()
+            dismissPopupWindow(true)
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
         viewTextSelection.noteSelection.setOnClickListener {
-            dismissPopupWindow()
+            dismissPopupWindow(false)
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
     }
 
     @JavascriptInterface
     fun onTextSelectionItemClicked(id: Int, selectedText: String?) {
-
-        uiHandler.post { loadUrl("javascript:clearSelection()") }
-
         when (id) {
             R.id.copySelection -> {
                 Log.v(LOG_TAG, "-> onTextSelectionItemClicked -> copySelection -> $selectedText")
+                uiHandler.post { loadUrl("javascript:clearSelection()") }
                 UiUtil.copyToClipboard(context, selectedText)
                 Toast.makeText(context, context.getString(R.string.copied), Toast.LENGTH_SHORT).show()
             }
             R.id.shareSelection -> {
                 Log.v(LOG_TAG, "-> onTextSelectionItemClicked -> shareSelection -> $selectedText")
+                uiHandler.post { loadUrl("javascript:clearSelection()") }
                 UiUtil.share(context, selectedText)
             }
             R.id.defineSelection -> {
                 Log.v(LOG_TAG, "-> onTextSelectionItemClicked -> defineSelection -> $selectedText")
+                uiHandler.post { loadUrl("javascript:clearSelection()") }
                 uiHandler.post { showDictDialog(selectedText) }
             }
             R.id.noteSelection -> {
                 Log.v(LOG_TAG, "-> onTextSelectionItemClicked -> defineSelection -> $selectedText")
-
-                uiHandler.post { showNoteDialog(selectedText) }
-                /*val noteDataEvent = NoteDataEvent()
-                noteDataEvent.selectedText = selectedText
-                EventBus.getDefault().post(NoteDataEvent())*/
+                uiHandler.post { showNoteDialog() }
             }
             else -> {
+                uiHandler.post { loadUrl("javascript:clearSelection()") }
                 Log.w(LOG_TAG, "-> onTextSelectionItemClicked -> unknown id = $id")
             }
         }
     }
 
-
-    private fun showNoteDialog(selectedText: String?) {
+    private fun showNoteDialog() {
         val noteDialogFragment = NoteDialogFragment()
         noteDialogFragment.show(parentFragment.fragmentManager, NoteDialogFragment::class.java.name)
     }
+
     private fun showDictDialog(selectedText: String?) {
         val dictionaryFragment = DictionaryFragment()
         val bundle = Bundle()
@@ -365,7 +375,12 @@ class FolioWebView : WebView {
 
     private fun onHighlightColorItemsClicked(style: HighlightStyle, isAlreadyCreated: Boolean) {
         parentFragment.highlight(style, isAlreadyCreated)
-        dismissPopupWindow()
+        dismissPopupWindow(true)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun updateHighlightNote(event: NoteDataEvent) {
+        parentFragment.highlight(event.pickedHighlightStyle, false)
     }
 
     @JavascriptInterface
@@ -517,7 +532,7 @@ class FolioWebView : WebView {
 
         override fun onDestroyActionMode(mode: ActionMode) {
             Log.d(LOG_TAG, "-> onDestroyActionMode")
-            dismissPopupWindow()
+            dismissPopupWindow(true)
         }
     }
 
@@ -542,7 +557,7 @@ class FolioWebView : WebView {
 
         override fun onDestroyActionMode(mode: ActionMode) {
             Log.d(LOG_TAG, "-> onDestroyActionMode")
-            dismissPopupWindow()
+            dismissPopupWindow(true)
         }
 
         override fun onGetContentRect(mode: ActionMode, view: View, outRect: Rect) {
