@@ -809,6 +809,7 @@ class FolioPageFragment : Fragment(),
                 spineIndex,
                 rangy, noteContent
             )
+            noteContent = ""
         }
     }
 

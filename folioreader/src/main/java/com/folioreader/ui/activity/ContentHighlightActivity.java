@@ -69,7 +69,7 @@ public class ContentHighlightActivity extends AppCompatActivity {
                 getIntent().getStringExtra(Constants.BOOK_TITLE));
         ContentHighlightPagerAdapter mainFragmentPagerAdapter = new ContentHighlightPagerAdapter(getSupportFragmentManager());
         mainFragmentPagerAdapter.addFragment(contentFrameLayout, "Content");
-        mainFragmentPagerAdapter.addFragment(highlightFragment, "Highlight and Note");
+        mainFragmentPagerAdapter.addFragment(highlightFragment, "Note");
         viewPager.setAdapter(mainFragmentPagerAdapter);
     }
 
