@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -241,7 +242,7 @@ class FolioPageFragment : Fragment(),
             getLastReadLocator()
 
         if (isAdded) {
-            mWebview!!.dismissPopupWindow(true)
+            mWebview!!.dismissPopupWindow()
             mWebview!!.initViewTextSelection()
             loadingView!!.updateTheme()
             loadingView!!.show()

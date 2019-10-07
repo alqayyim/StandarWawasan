@@ -197,7 +197,7 @@ class FolioWebView : WebView {
     }
 
     @JavascriptInterface
-    fun dismissPopupWindow(isRemoveSelectedText : Boolean): Boolean {
+    fun dismissPopupWindow(): Boolean {
         Log.d(LOG_TAG, "-> dismissPopupWindow -> " + parentFragment.spineItem?.href)
         val wasShowing = popupWindow.isShowing
         if (Looper.getMainLooper().thread == Thread.currentThread()) {
@@ -205,19 +205,18 @@ class FolioWebView : WebView {
         } else {
             uiHandler.post { popupWindow.dismiss() }
         }
-
-        if (isRemoveSelectedText) {
-            selectionRect = Rect()
-            uiHandler.removeCallbacks(isScrollingRunnable)
-            isScrollingCheckDuration = 0
-        }
+        
+        selectionRect = Rect()
+        uiHandler.removeCallbacks(isScrollingRunnable)
+        isScrollingCheckDuration = 0
+        
         return wasShowing
     }
 
     override fun destroy() {
         super.destroy()
         Log.d(LOG_TAG, "-> destroy")
-        dismissPopupWindow(true)
+        dismissPopupWindow()
         destroyed = true
     }
 
@@ -307,25 +306,25 @@ class FolioWebView : WebView {
 
         viewTextSelection.deleteHighlight.setOnClickListener {
             Log.v(LOG_TAG, "-> onClick -> deleteHighlight")
-            dismissPopupWindow(true)
+            dismissPopupWindow()
             loadUrl("javascript:clearSelection()")
             loadUrl("javascript:deleteThisHighlight()")
         }
 
         viewTextSelection.copySelection.setOnClickListener {
-            dismissPopupWindow(true)
+            dismissPopupWindow()
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
         viewTextSelection.shareSelection.setOnClickListener {
-            dismissPopupWindow(true)
+            dismissPopupWindow()
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
         viewTextSelection.defineSelection.setOnClickListener {
-            dismissPopupWindow(true)
+            dismissPopupWindow()
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
         viewTextSelection.noteSelection.setOnClickListener {
-            dismissPopupWindow(false)
+            dismissPopupWindow()
             loadUrl("javascript:onTextSelectionItemClicked(${it.id})")
         }
     }
@@ -375,7 +374,7 @@ class FolioWebView : WebView {
 
     private fun onHighlightColorItemsClicked(style: HighlightStyle, isAlreadyCreated: Boolean) {
         parentFragment.highlight(style, isAlreadyCreated)
-        dismissPopupWindow(true)
+        dismissPopupWindow()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -532,13 +531,12 @@ class FolioWebView : WebView {
 
         override fun onDestroyActionMode(mode: ActionMode) {
             Log.d(LOG_TAG, "-> onDestroyActionMode")
-            dismissPopupWindow(true)
+            dismissPopupWindow()
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private inner class TextSelectionCb2 : ActionMode.Callback2() {
-
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             Log.d(LOG_TAG, "-> onCreateActionMode")
             menu.clear()
@@ -557,7 +555,7 @@ class FolioWebView : WebView {
 
         override fun onDestroyActionMode(mode: ActionMode) {
             Log.d(LOG_TAG, "-> onDestroyActionMode")
-            dismissPopupWindow(true)
+            dismissPopupWindow()
         }
 
         override fun onGetContentRect(mode: ActionMode, view: View, outRect: Rect) {
