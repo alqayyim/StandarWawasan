@@ -64,6 +64,10 @@ import com.folioreader.util.AppUtil
 import com.folioreader.util.FileUtil
 import com.folioreader.util.UiUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.warkiz.widget.IndicatorSeekBar
+import com.warkiz.widget.OnSeekChangeListener
+import com.warkiz.widget.SeekParams
+import kotlinx.android.synthetic.main.view_config_page.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -76,7 +80,27 @@ import org.readium.r2.streamer.server.Server
 import java.lang.ref.WeakReference
 
 class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControllerCallback,
-    View.OnSystemUiVisibilityChangeListener {
+    View.OnSystemUiVisibilityChangeListener, OnSeekChangeListener {
+
+    private var progressPageValue = 0
+
+    override fun onSeeking(seekParams: SeekParams?) {
+        seekParams?.let{
+            progressPageValue = it.progress
+        }
+    }
+
+    override fun onStartTrackingTouch(seekBar: IndicatorSeekBar?) {
+        //do nothing
+    }
+
+    override fun onStopTrackingTouch(seekBar: IndicatorSeekBar?) {
+        //val page = GotoPageEvent()
+        //page.page = progressPageValue
+        //EventBus.getDefault().post(page)
+
+        mFolioPageViewPager!!.currentItem = progressPageValue
+    }
 
     private var bookFileName: String? = null
 
@@ -265,6 +289,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         initDistractionFreeMode(savedInstanceState)
 
         setContentView(R.layout.folio_activity)
+
+        seekBar.onSeekChangeListener = this
         this.savedInstanceState = savedInstanceState
 
         if (savedInstanceState != null) {
@@ -298,14 +324,14 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             setupBook()
         }
     }
-
+    lateinit var bottomContainer : View
     private fun initActionBar() {
 
         appBarLayout = findViewById(R.id.appBarLayout)
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         actionBar = supportActionBar
-
+        bottomContainer = findViewById(R.id.mContainer)
         val config = AppUtil.getSavedConfig(applicationContext)!!
 
         val drawable = ContextCompat.getDrawable(this, R.drawable.ic_drawer)
@@ -398,7 +424,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         } else if (itemId == R.id.itemConfig) {
             Log.v(LOG_TAG, "-> onOptionsItemSelected -> " + item.title)
-            showConfigBottomSheetDialogFragment()
+            //showConfigBottomSheetDialogFragment()
             return true
 
         } else if (itemId == R.id.itemTts) {
@@ -432,18 +458,18 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up)
     }
 
-    fun showConfigBottomSheetDialogFragment() {
+    /*fun showConfigBottomSheetDialogFragment() {
         val bottomSheet = ConfigPageBottomSheetDialogFragment()
         bottomSheet.setProgressPage(mFolioPageViewPager!!.currentItem)
         bottomSheet.show(
             supportFragmentManager,
             ConfigPageBottomSheetDialogFragment.LOG_TAG
         )
-        /*ConfigBottomSheetDialogFragment().show(
+        *//*ConfigBottomSheetDialogFragment().show(
             supportFragmentManager,
             ConfigBottomSheetDialogFragment.LOG_TAG
-        )*/
-    }
+        )*//*
+    }*/
 
     fun showMediaController() {
         mediaControllerFragment!!.show(supportFragmentManager)
@@ -716,8 +742,10 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
         if (distractionFreeMode) {
             showSystemUI()
+            bottomContainer.visibility = View.VISIBLE
         } else {
             hideSystemUI()
+            bottomContainer.visibility = View.GONE
         }
     }
 
@@ -729,11 +757,13 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             if (appBarLayout != null)
                 appBarLayout!!.setTopMargin(statusBarHeight)
             onSystemUiVisibilityChange(View.SYSTEM_UI_FLAG_VISIBLE)
+            Log.d("TESTING", "MASUK ELSE")
         }
     }
 
@@ -862,13 +892,19 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private fun configFolio() {
 
         mFolioPageViewPager = findViewById(R.id.folioPageViewPager)
+        val maxItem = if (mFolioPageViewPager!!.adapter == null) 200 else mFolioPageViewPager!!.adapter.count
+        tvMaxPage.setText("/ "+maxItem.toString())
         // Replacing with addOnPageChangeListener(), onPageSelected() is not invoked
-        mFolioPageViewPager!!.setOnPageChangeListener(object : DirectionalViewpager.OnPageChangeListener {
+        mFolioPageViewPager!!.addOnPageChangeListener(object : DirectionalViewpager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
             override fun onPageSelected(position: Int) {
                 Log.v(LOG_TAG, "-> onPageSelected -> DirectionalViewpager -> position = $position")
 
+                progressPageValue = position
+
+                tvCountPage.setText(position.toString())
+                seekBar.setProgress(position.toFloat())
                 EventBus.getDefault().post(
                     MediaOverlayPlayPauseEvent(
                         spine!![currentChapterIndex].href, false, true
@@ -879,7 +915,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             }
 
             override fun onPageScrollStateChanged(state: Int) {
-
                 if (state == DirectionalViewpager.SCROLL_STATE_IDLE) {
                     val position = mFolioPageViewPager!!.currentItem
                     Log.v(
@@ -1037,7 +1072,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun reload(page: GotoPageEvent) {
-        Log.d(LOG_TAG, "GOTOPAGE : "+page.page.toString())
         mFolioPageViewPager!!.currentItem = page.page
     }
 

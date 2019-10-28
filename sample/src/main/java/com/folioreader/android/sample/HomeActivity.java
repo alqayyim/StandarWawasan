@@ -97,6 +97,8 @@ public class HomeActivity extends AppCompatActivity
                         .openBook("file:///android_asset/standarwawasangood4.epub");
             }
         });
+        finish();
+
     }
 
     private ReadLocator getLastReadLocator() {
