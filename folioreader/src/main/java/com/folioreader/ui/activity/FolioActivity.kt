@@ -892,7 +892,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     private fun configFolio() {
 
         mFolioPageViewPager = findViewById(R.id.folioPageViewPager)
-        val maxItem = if (mFolioPageViewPager!!.adapter == null) 200 else mFolioPageViewPager!!.adapter.count
+        val maxItem = if (mFolioPageViewPager!!.adapter == null) 406 else mFolioPageViewPager!!.adapter.count
         tvMaxPage.setText("/ "+maxItem.toString())
         // Replacing with addOnPageChangeListener(), onPageSelected() is not invoked
         mFolioPageViewPager!!.addOnPageChangeListener(object : DirectionalViewpager.OnPageChangeListener {
