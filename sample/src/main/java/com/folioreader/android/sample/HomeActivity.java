@@ -66,12 +66,10 @@ public class HomeActivity extends AppCompatActivity
                 != versionCode){
             config = new Config();
             config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
-            Log.d("homeactivity", "new epub");
         } else {
             if (config == null)
                 config = new Config();
             config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
-            Log.d("homeactivity", "old epub");
         }
 
         folioReader.setReadLocator(readLocator);

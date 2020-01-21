@@ -331,6 +331,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         setSupportActionBar(toolbar)
         actionBar = supportActionBar
         bottomContainer = findViewById(R.id.mContainer)
+        bottomContainer.visibility = View.VISIBLE
         val config = AppUtil.getSavedConfig(applicationContext)!!
 
         val drawable = ContextCompat.getDrawable(this, R.drawable.ic_drawer)
@@ -738,7 +739,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     }
 
     override fun toggleSystemUI() {
-
         if (distractionFreeMode) {
             showSystemUI()
             bottomContainer.visibility = View.VISIBLE
@@ -762,7 +762,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             if (appBarLayout != null)
                 appBarLayout!!.setTopMargin(statusBarHeight)
             onSystemUiVisibilityChange(View.SYSTEM_UI_FLAG_VISIBLE)
-            Log.d("TESTING", "MASUK ELSE")
         }
     }
 

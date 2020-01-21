@@ -463,7 +463,7 @@ class FolioPageFragment : Fragment(),
 
                 val readLocator: ReadLocator?
                 if (savedInstanceState == null) {
-                    EventBus.getDefault().post(VisibilityEvent())
+                    //EventBus.getDefault().post(VisibilityEvent())
                     Log.v(LOG_TAG, "-> onPageFinished -> took from getEntryReadLocator")
                     readLocator = mActivityCallback!!.entryReadLocator
                 } else {
