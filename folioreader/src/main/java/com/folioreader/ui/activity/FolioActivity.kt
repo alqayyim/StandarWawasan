@@ -44,11 +44,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.folioreader.Config
-import com.folioreader.Constants
+import com.folioreader.*
 import com.folioreader.Constants.*
-import com.folioreader.FolioReader
-import com.folioreader.R
 import com.folioreader.model.DisplayUnit
 import com.folioreader.model.HighlightImpl
 import com.folioreader.model.event.GotoPageEvent
@@ -63,6 +60,7 @@ import com.folioreader.ui.fragment.MediaControllerFragment
 import com.folioreader.ui.view.*
 import com.folioreader.util.AppUtil
 import com.folioreader.util.FileUtil
+import com.folioreader.util.SharedPreferenceUtil
 import com.folioreader.util.UiUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.warkiz.widget.IndicatorSeekBar
@@ -267,7 +265,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        saveVersionCode()
         EventBus.getDefault().register(this)
         // Need to add when vector drawables support library is used.
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -1019,6 +1017,14 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     override fun storeLastReadLocator(lastReadLocator: ReadLocator) {
         Log.v(LOG_TAG, "-> storeLastReadLocator")
         this.lastReadLocator = lastReadLocator
+    }
+
+    private fun saveVersionCode(){
+        val versionCode = BuildConfig.VERSION_CODE
+        SharedPreferenceUtil.putSharedPreferencesInt(
+            this, Config.VERSION_CODE,
+            versionCode
+        )
     }
 
     private fun setConfig(savedInstanceState: Bundle?) {

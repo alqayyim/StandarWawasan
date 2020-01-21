@@ -31,6 +31,7 @@ import com.folioreader.ui.base.OnSaveHighlight;
 import com.folioreader.util.AppUtil;
 import com.folioreader.util.OnHighlightListener;
 import com.folioreader.util.ReadLocatorListener;
+import com.folioreader.util.SharedPreferenceUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,11 +59,20 @@ public class HomeActivity extends AppCompatActivity
         getHighlightsAndSave();
 
         ReadLocator readLocator = getLastReadLocator();
+        int versionCode = BuildConfig.VERSION_CODE;
 
         Config config = AppUtil.getSavedConfig(getApplicationContext());
-        if (config == null)
+        if (SharedPreferenceUtil.getSharedPreferencesInt(this, Config.VERSION_CODE, -1)
+                != versionCode){
             config = new Config();
-        config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
+            config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
+            Log.d("homeactivity", "new epub");
+        } else {
+            if (config == null)
+                config = new Config();
+            config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
+            Log.d("homeactivity", "old epub");
+        }
 
         folioReader.setReadLocator(readLocator);
         folioReader.setConfig(config, true)
