@@ -53,6 +53,7 @@ import com.folioreader.model.DisplayUnit
 import com.folioreader.model.HighlightImpl
 import com.folioreader.model.event.GotoPageEvent
 import com.folioreader.model.event.MediaOverlayPlayPauseEvent
+import com.folioreader.model.event.VisibilityEvent
 import com.folioreader.model.locators.ReadLocator
 import com.folioreader.model.locators.SearchLocator
 import com.folioreader.ui.adapter.FolioPageFragmentAdapter
@@ -1068,6 +1069,11 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 spine!![currentChapterIndex].href, false, false
             )
         )
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun setVisibility(visibility: VisibilityEvent) {
+        bottomContainer.visibility = View.VISIBLE
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
