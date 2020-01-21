@@ -15,7 +15,9 @@
  */
 package com.folioreader.android.sample;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -58,24 +60,34 @@ public class HomeActivity extends AppCompatActivity
 
         getHighlightsAndSave();
 
-        ReadLocator readLocator = getLastReadLocator();
-        int versionCode = BuildConfig.VERSION_CODE;
+        final ReadLocator readLocator = getLastReadLocator();
+        final int versionCode = BuildConfig.VERSION_CODE;
 
-        Config config = AppUtil.getSavedConfig(getApplicationContext());
-        if (SharedPreferenceUtil.getSharedPreferencesInt(this, Config.VERSION_CODE, -1)
-                != versionCode){
-            config = new Config();
-            config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
-        } else {
-            if (config == null)
-                config = new Config();
-            config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
-        }
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Config config = AppUtil.getSavedConfig(getApplicationContext());
+                if (SharedPreferenceUtil.getSharedPreferencesInt(HomeActivity.this, Config.VERSION_CODE, -1)
+                        != versionCode){
+                    config = new Config();
+                    config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
+                } else {
+                    if (config == null)
+                        config = new Config();
+                    config.setAllowedDirection(Config.AllowedDirection.ONLY_HORIZONTAL);
+                }
 
-        folioReader.setReadLocator(readLocator);
-        folioReader.setConfig(config, true)
-                .openBook("file:///android_asset/standarwawasangood4.epub");
-        findViewById(R.id.btn_raw).setOnClickListener(new View.OnClickListener() {
+                folioReader.setReadLocator(readLocator);
+                folioReader.setConfig(config, true)
+                        .openBook("file:///android_asset/standarwawasangood4.epub");
+
+                finish();
+            }
+        }, 1000L);
+
+
+        /*findViewById(R.id.btn_raw).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -104,8 +116,7 @@ public class HomeActivity extends AppCompatActivity
                 folioReader.setConfig(config, true)
                         .openBook("file:///android_asset/standarwawasangood4.epub");
             }
-        });
-        finish();
+        });*/
 
     }
 
