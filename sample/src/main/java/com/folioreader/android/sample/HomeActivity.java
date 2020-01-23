@@ -85,7 +85,7 @@ public class HomeActivity extends AppCompatActivity
 
                 folioReader.setReadLocator(readLocator);
                 folioReader.setConfig(config, true)
-                        .openBook("file:///android_asset/standarwawasangood4.epub");
+                        .openBook("file:///android_asset/standarwawasan.epub");
 
                 finish();
             }
